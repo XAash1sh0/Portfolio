@@ -6,6 +6,9 @@
   <title>Aashish Kumar Karki | Geomatics Portfolio</title>
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
   <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
@@ -21,6 +24,7 @@
         <li><a href="#projects">Projects & Papers</a></li>
         <li><a href="#education-experience">Education & Experience</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="#spatialtools">DemoTools</li>
       </ul>
     </div>
   </header>
@@ -430,5 +434,137 @@
       <p>© 2025 Aashish Kumar Karki | All rights reserved</p>
     </div>
   </footer>
+<!-- Spatial Demo Tools Section -->
+<div id="spatialtools" class="toolbox" style="position:relative; margin: 50px auto; max-width: 700px;">
+  <h2>🧪 Spatial Adventure Lab</h2>
+
+  <div class="tool-card" onclick="fetchAndBuffer()">
+    <h3>🛣️ Road Wrangler</h3>
+    <p>Trace roads and wrap them with protective buffer zones.</p>
+  </div>
+
+  <div class="tool-card" onclick="fetchAmenities()">
+    <h3>🏪 Amenity Scanner</h3>
+    <p>Scan for schools, cafes, hospitals inside your buffer zone.</p>
+  </div>
+
+  <div class="tool-card" onclick="countByType()">
+    <h3>📈 Insight Analyzer</h3>
+    <p>Discover what types of places are most common nearby.</p>
+  </div>
+
+  <div id="results">🔍 Tool feedback and results will appear here.</div>
+
+  <!-- Optional: Map container -->
+  <div id="map" style="height: 500px; width: 100%; margin-top: 20px;"></div>
+</div>
+
+<!-- Spatial Tool Scripts -->
+<script>
+  const map = L.map('map').setView([27.7172, 85.3240], 14);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  let roadLayer, bufferLayer, amenityLayer;
+  let roadsGeoJSON = null;
+  let amenitiesGeoJSON = null;
+  let bufferGeoJSON = null;
+
+  async function fetchAndBuffer() {
+    clearLayers();
+    document.getElementById('results').innerText = "🛠 Fetching roads and buffering...";
+
+    const query = `
+      [out:json];
+      way["highway"](27.69,85.28,27.74,85.36);
+      out geom;
+    `;
+    const res = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: query
+    });
+    const data = await res.json();
+
+    const features = data.elements.map(way => {
+      const coords = way.geometry.map(p => [p.lon, p.lat]);
+      return {
+        type: "Feature",
+        geometry: { type: "LineString", coordinates: coords },
+        properties: {}
+      };
+    });
+
+    roadsGeoJSON = { type: "FeatureCollection", features };
+    roadLayer = L.geoJSON(roadsGeoJSON, { color: '#4f46e5' }).addTo(map);
+    bufferGeoJSON = turf.buffer(roadsGeoJSON, 0.1, { units: 'kilometers' });
+    bufferLayer = L.geoJSON(bufferGeoJSON, { color: 'red', fillOpacity: 0.2 }).addTo(map);
+
+    document.getElementById('results').innerText = "✅ Roads buffered (100m)";
+  }
+
+  async function fetchAmenities() {
+    if (!bufferGeoJSON) return alert("Run Road Wrangler first!");
+
+    document.getElementById('results').innerText = "🔍 Scanning for nearby amenities...";
+    const query = `
+      [out:json];
+      node["amenity"](27.69,85.28,27.74,85.36);
+      out;
+    `;
+    const res = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: query
+    });
+    const data = await res.json();
+
+    const features = data.elements.map(n => ({
+      type: "Feature",
+      properties: { amenity: n.tags.amenity },
+      geometry: { type: "Point", coordinates: [n.lon, n.lat] }
+    }));
+
+    amenitiesGeoJSON = {
+      type: "FeatureCollection",
+      features: features.filter(f => turf.booleanPointInPolygon(f, bufferGeoJSON))
+    };
+
+    amenityLayer = L.geoJSON(amenitiesGeoJSON, {
+      pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+        radius: 6,
+        fillColor: "#10b981",
+        color: "#047857",
+        weight: 1,
+        fillOpacity: 0.8
+      }).bindPopup(`Amenity: ${f.properties.amenity}`)
+    }).addTo(map);
+
+    document.getElementById('results').innerText = `✅ Found ${amenitiesGeoJSON.features.length} amenities inside buffer.`;
+  }
+
+  function countByType() {
+    if (!amenitiesGeoJSON) return alert("Run Amenity Scanner first!");
+
+    const counts = {};
+    amenitiesGeoJSON.features.forEach(f => {
+      const a = f.properties.amenity;
+      counts[a] = (counts[a] || 0) + 1;
+    });
+
+    let output = "📊 Amenity Summary:\n";
+    for (const [key, value] of Object.entries(counts)) {
+      output += `• ${key}: ${value}\n`;
+    }
+
+    document.getElementById('results').innerText = output;
+  }
+
+  function clearLayers() {
+    if (roadLayer) map.removeLayer(roadLayer);
+    if (bufferLayer) map.removeLayer(bufferLayer);
+    if (amenityLayer) map.removeLayer(amenityLayer);
+  }
+</script>
 </body>
 </html>
