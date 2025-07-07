@@ -1,93 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Spatial Adventure Lab</title>
+  <meta charset="UTF-8" />
+  <title>POI Dominance Analyzer with Routing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { margin: 0; font-family: sans-serif; }
-    .toolbox { padding: 20px; max-width: 1000px; margin: auto; }
-    .tool-card { background: #f0f0f0; padding: 10px; margin: 10px 0; cursor: pointer; border-radius: 8px; }
-    #map { height: 80vh; width: 100%; margin-top: 20px; }
-    #results { background: #e5e7eb; padding: 10px; border-radius: 5px; margin-top: 10px; }
+    html, body, #map { height: 100%; margin: 0; padding: 0; }
+    #panel {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      font-family: Arial, sans-serif;
+      width: 90%;
+      max-width: 900px;
+    }
+    #results {
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .bar {
+      background: #10b981;
+      height: 14px;
+      margin-top: 2px;
+      border-radius: 2px;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      margin-top: 10px;
+      gap: 10px;
+    }
+    .btn-group button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-group button:hover {
+      background: #2563eb;
+    }
+    .leaflet-routing-container {
+      background: white !important;
+      border-radius: 5px !important;
+      padding: 5px !important;
+      font-size: 14px !important;
+    }
   </style>
 </head>
 <body>
-
-<div class="toolbox">
-  <h2>🧪 Spatial Adventure Lab</h2>
-
-  <div class="tool-card" onclick="fetchAndBuffer()">🛣️ Road Wrangler</div>
-  <div class="tool-card" onclick="fetchAmenities()">🏪 Amenity Scanner</div>
-  <div class="tool-card" onclick="countByType()">📈 Insight Analyzer</div>
-
-  <div id="results">🔍 Tool feedback and results will appear here.</div>
+  <div id="panel">
+    <label>Buffer Radius (meters):
+      <select id="radius">
+        <option value="300">300</option>
+        <option value="500" selected>500</option>
+        <option value="1000">1000</option>
+      </select>
+    </label>
+    <div class="btn-group">
+      <button onclick="activateTool()">POI Analysis</button>
+      <button onclick="highlightNearestDominantPOI()">Nearest Dominant POI</button>
+      <button onclick="countPublicInfrastructure()">Public Infrastructure Count + Route</button>
+      <button onclick="clearAll()">Clear Map</button>
+    </div>
+    <div id="results">Click on map to select location.</div>
+  </div>
   <div id="map"></div>
-</div>
 
-<script>
-  const map = L.map('map').setView([27.7172, 85.3240], 14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-
-  let roadLayer, bufferLayer, amenityLayer;
-  let roadsGeoJSON = null, bufferGeoJSON = null, amenitiesGeoJSON = null;
-
-  async function fetchAndBuffer() {
-    clearLayers();
-    document.getElementById('results').innerText = "🛠 Fetching roads and buffering...";
-    const query = `[out:json];way["highway"](27.69,85.28,27.74,85.36);out geom;`;
-    const res = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: query });
-    const data = await res.json();
-    const features = data.elements.map(way => ({
-      type: "Feature", geometry: { type: "LineString", coordinates: way.geometry.map(p => [p.lon, p.lat]) }, properties: {}
-    }));
-    roadsGeoJSON = { type: "FeatureCollection", features };
-    roadLayer = L.geoJSON(roadsGeoJSON, { color: '#4f46e5' }).addTo(map);
-    bufferGeoJSON = turf.buffer(roadsGeoJSON, 0.1, { units: 'kilometers' });
-    bufferLayer = L.geoJSON(bufferGeoJSON, { color: 'red', fillOpacity: 0.2 }).addTo(map);
-    document.getElementById('results').innerText = "✅ Roads buffered (100m)";
-  }
-
-  async function fetchAmenities() {
-    if (!bufferGeoJSON) return alert("Run Road Wrangler first!");
-    document.getElementById('results').innerText = "🔍 Scanning for amenities...";
-    const query = `[out:json];node["amenity"](27.69,85.28,27.74,85.36);out;`;
-    const res = await fetch("https://overpass-api.de/api/interpreter", { method: "POST", body: query });
-    const data = await res.json();
-    const features = data.elements.map(n => ({
-      type: "Feature",
-      properties: { amenity: n.tags.amenity },
-      geometry: { type: "Point", coordinates: [n.lon, n.lat] }
-    }));
-    amenitiesGeoJSON = {
-      type: "FeatureCollection",
-      features: features.filter(f => turf.booleanPointInPolygon(f, bufferGeoJSON))
-    };
-    amenityLayer = L.geoJSON(amenitiesGeoJSON, {
-      pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-        radius: 6, fillColor: "#10b981", color: "#047857", weight: 1, fillOpacity: 0.8
-      }).bindPopup(`Amenity: ${f.properties.amenity}`)
+  <script>
+    const map = L.map('map').setView([27.7, 85.3], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
     }).addTo(map);
-    document.getElementById('results').innerText = `✅ Found ${amenitiesGeoJSON.features.length} amenities.`;
-  }
 
-  function countByType() {
-    if (!amenitiesGeoJSON) return alert("Run Amenity Scanner first!");
-    const counts = {};
-    amenitiesGeoJSON.features.forEach(f => counts[f.properties.amenity] = (counts[f.properties.amenity] || 0) + 1);
-    let output = "📊 Amenity Summary:\n";
-    for (const [type, count] of Object.entries(counts)) output += `• ${type}: ${count}\n`;
-    document.getElementById('results').innerText = output;
-  }
+    let marker = null,
+        bufferLayer = null,
+        poiLayer = null,
+        dominantPOILayer = null,
+        infraLayer = null,
+        routeLayer = null;
 
-  function clearLayers() {
-    if (roadLayer) map.removeLayer(roadLayer);
-    if (bufferLayer) map.removeLayer(bufferLayer);
-    if (amenityLayer) map.removeLayer(amenityLayer);
-  }
-</script>
+    let lastBuffer = null, lastCenter = null, lastPOIs = [];
+
+    function activateTool() {
+      document.getElementById('results').innerText = 'Click a location on map to start analysis...';
+      map.once('click', async function(e) {
+        clearAll();
+
+        const center = [e.latlng.lng, e.latlng.lat];
+        lastCenter = center;
+        const radius = parseInt(document.getElementById('radius').value);
+        marker = L.marker([center[1], center[0]]).addTo(map);
+
+        const pt = turf.point(center);
+        const buffered = turf.buffer(pt, radius, { units: 'meters' });
+        lastBuffer = buffered;
+
+        bufferLayer = L.geoJSON(buffered, { style: { color: '#3b82f6', fillOpacity: 0.1 } }).addTo(map);
+
+        document.getElementById('results').innerText = 'Fetching POIs...';
+
+        const bbox = turf.bbox(buffered);
+        const query = `[out:json];node["amenity"](${bbox[1]},${bbox[0]},${bbox[3]},${bbox[2]});out body;`;
+        const res = await fetch("https://overpass-api.de/api/interpreter", {
+          method: "POST",
+          body: query
+        });
+        const data = await res.json();
+
+        const pois = data.elements.map(e => ({
+          type: "Feature",
+          properties: { amenity: e.tags.amenity },
+          geometry: { type: "Point", coordinates: [e.lon, e.lat] }
+        })).filter(f => turf.booleanPointInPolygon(f, buffered));
+
+        lastPOIs = pois;
+
+        poiLayer = L.geoJSON({ type: "FeatureCollection", features: pois }, {
+          pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+            radius: 5,
+            color: '#047857',
+            fillColor: '#34d399',
+            fillOpacity: 0.8,
+            weight: 1
+          }).bindPopup(`Amenity: ${f.properties.amenity}`)
+        }).addTo(map);
+
+        const counts = {};
+        pois.forEach(f => {
+          const type = f.properties.amenity;
+          counts[type] = (counts[type] || 0) + 1;
+        });
+
+        let html = `<strong>${pois.length} POIs found</strong><br><br>`;
+        for (const [type, count] of Object.entries(counts)) {
+          const pct = ((count / pois.length) * 100).toFixed(1);
+          html += `${type}: ${count} (${pct}%)<div class="bar" style="width:${pct}%;"></div>`;
+        }
+        document.getElementById('results').innerHTML = html || 'No POIs found.';
+      });
+    }
+
+    function highlightNearestDominantPOI() {
+      if (!lastBuffer || !lastPOIs.length || !lastCenter) {
+        alert("Run POI Analysis first.");
+        return;
+      }
+      if (dominantPOILayer) map.removeLayer(dominantPOILayer);
+
+      const counts = {};
+      lastPOIs.forEach(f => {
+        const type = f.properties.amenity;
+        counts[type] = (counts[type] || 0) + 1;
+      });
+
+      const dominant = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
+      if (!dominant) return alert("No dominant POI found.");
+
+      const filtered = lastPOIs.filter(f => f.properties.amenity === dominant);
+      const from = turf.point(lastCenter);
+      const nearest = filtered.sort((a, b) => turf.distance(from, a) - turf.distance(from, b))[0];
+
+      dominantPOILayer = L.geoJSON(nearest, {
+        pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+          radius: 7,
+          color: '#b91c1c',
+          fillColor: '#f87171',
+          fillOpacity: 1,
+          weight: 2
+        }).bindPopup(`Nearest dominant POI: ${dominant}`)
+      }).addTo(map);
+    }
+
+    async function countPublicInfrastructure() {
+      if (!lastBuffer) return alert("Run POI Analysis first.");
+      if (infraLayer) map.removeLayer(infraLayer);
+      if (routeLayer) map.removeLayer(routeLayer);
+
+      const bbox = turf.bbox(lastBuffer);
+      const query = `[out:json];node["highway"="bus_stop"](${bbox[1]},${bbox[0]},${bbox[3]},${bbox[2]});out body;`;
+      const res = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: query
+      });
+      const data = await res.json();
+
+      const stops = data.elements.map(e => ({
+        type: "Feature",
+        properties: { name: e.tags.name || "Bus Stop" },
+        geometry: { type: "Point", coordinates: [e.lon, e.lat] }
+      })).filter(f => turf.booleanPointInPolygon(f, lastBuffer));
+
+      infraLayer = L.geoJSON({ type: "FeatureCollection", features: stops }, {
+        pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+          radius: 4,
+          color: '#78350f',
+          fillColor: '#fbbf24',
+          fillOpacity: 0.9
+        }).bindPopup(`Public Transport: ${f.properties.name}`)
+      }).addTo(map);
+
+      document.getElementById('results').innerHTML = `<strong>🚌 Found ${stops.length} public transport stops in area.</strong>`;
+
+      if (stops.length === 0) return;
+
+      // Find nearest stop
+      const from = turf.point(lastCenter);
+      let nearestStop = stops[0];
+      let minDist = turf.distance(from, stops[0]);
+      for (let i = 1; i < stops.length; i++) {
+        let dist = turf.distance(from, stops[i]);
+        if (dist < minDist) {
+          minDist = dist;
+          nearestStop = stops[i];
+        }
+      }
+
+      // Request route from OSRM public demo server
+      // Format: https://router.project-osrm.org/route/v1/driving/lon,lat;lon,lat?overview=full&geometries=geojson
+      const start = lastCenter;
+      const end = nearestStop.geometry.coordinates;
+
+      const routeUrl = `https://router.project-osrm.org/route/v1/driving/${start[0]},${start[1]};${end[0]},${end[1]}?overview=full&geometries=geojson`;
+
+      const routeRes = await fetch(routeUrl);
+      const routeData = await routeRes.json();
+
+      if (routeData.code !== "Ok" || routeData.routes.length === 0) {
+        alert("Routing failed.");
+        return;
+      }
+
+      const routeGeoJSON = routeData.routes[0].geometry;
+
+      routeLayer = L.geoJSON(routeGeoJSON, {
+        style: { color: '#f97316', weight: 5, opacity: 0.8 }
+      }).addTo(map);
+
+      // Zoom map to route bounds
+      const routeBounds = L.geoJSON(routeGeoJSON).getBounds();
+      map.fitBounds(routeBounds.pad(0.5));
+
+      document.getElementById('results').innerHTML +=
+        `<br><strong>🚍 Nearest bus stop route displayed (${nearestStop.properties.name}). Distance: ${(minDist*1000).toFixed(0)} m</strong>`;
+    }
+
+    function clearAll() {
+      [marker, bufferLayer, poiLayer, dominantPOILayer, infraLayer, routeLayer].forEach(layer => {
+        if (layer) map.removeLayer(layer);
+      });
+      marker = bufferLayer = poiLayer = dominantPOILayer = infraLayer = routeLayer = null;
+      lastBuffer = lastCenter = null;
+      lastPOIs = [];
+      document.getElementById('results').innerHTML = 'Click on map to select location.';
+    }
+  </script>
 </body>
 </html>
