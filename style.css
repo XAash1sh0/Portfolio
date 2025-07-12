@@ -13,7 +13,6 @@
   --map-blue: #808080;
   --map-earth: #b3b3b3;
 }
-
 * {
   margin: 0;
   padding: 0;
@@ -74,8 +73,6 @@ a {
   text-decoration: none;
   color: var(--primary);
   transition: var(--transition);
-  min-height: 48px;
-  min-width: 48px;
 }
 
 ul {
@@ -99,8 +96,6 @@ img {
   font-size: 16px;
   transition: var(--transition);
   text-align: center;
-  min-height: 48px;
-  min-width: 48px;
 }
 
 .btn:hover {
@@ -124,74 +119,98 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #000000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 50px;
-  position: relative;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  padding: 15px 0;
   transition: var(--transition);
 }
 
+header {
+  background-color: #000000; /* Black background */
+  display: flex;
+  justify-content: space-between; /* Space between logo and nav */
+  align-items: center;
+  padding: 20px 50px;
+  position: relative; /* Allow absolute positioning for menu toggle */
+}
+
+/* Logo stays at left */
 .logo h1 {
-  color: #ffffff;
+  color: #ffffff; /* White text */
   font-size: 24px;
   margin: 0;
 }
 
+/* Nav links go to the right */
 .nav-links {
   display: flex;
   gap: 20px;
-  justify-content: flex-end;
-  flex-grow: 1;
+  justify-content: flex-end; /* Push nav links to the right */
+  flex-grow: 1; /* Take up available space */
 }
 
+/* Each nav link */
 .nav-links a {
-  color: #ffffff;
+  color: #ffffff; /* White text */
   text-decoration: none;
   font-size: 18px;
-  padding: 5px 0;
-  position: relative;
 }
 
+/* Optional: hover effect */
 .nav-links a:hover {
-  color: #00bfff;
+  color: #00bfff; /* Light blue on hover */
 }
-
 .nav-links a:hover::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  height: 2px;
-  background-color: #00bfff;
-  transition: width 0.3s;
 }
 
+/* Mobile menu toggle button */
 .menu-toggle {
   display: none;
   cursor: pointer;
   position: absolute;
-  right: 20px;
+  right: 20px; /* Align menu toggle to the right */
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%); /* Vertically center */
 }
 
+/* Hamburger lines */
 .menu-toggle span {
   display: block;
   width: 25px;
   height: 3px;
-  background-color: #ffffff;
+  background-color: #ffffff; /* White lines for the menu */
   margin: 5px 0;
   transition: 0.3s ease;
 }
 
+/* Media query to show the menu toggle on small screens */
+@media screen and (max-width: 768px) {
+  .nav-links {
+    display: none; /* Hide nav links on small screens */
+    flex-direction: column;
+    width: 100%; /* Make nav links full width */
+    position: absolute;
+    top: 80px; /* Position below the header */
+    left: 0;
+    background-color: #000000; /* Same black background */
+  }
+
+  .nav-links.active {
+    display: flex; /* Show nav links when active */
+  }
+
+  .menu-toggle {
+    display: block; /* Show the menu toggle button on small screens */
+  }
+}
+
+
 /* Hero Section */
 .hero {
-  background-color: #f9f9f9;
-  height: 100vh;
+  background-color: #f9f9f9; /* Light background for contrast */
+  height: 100vh; /* Full height */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -251,10 +270,46 @@ header {
   height: 300px;
   object-fit: cover;
   border-radius: 50%;
-  border: 4px solid #007bff;
+  border: 4px solid #007bff; /* optional: adds a nice border */
 }
 
-/* Skills Section */
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .text-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .text-content p {
+    font-size: 1rem;
+  }
+
+  .image-content img {
+    width: 80%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content {
+    padding: 20px 0;
+  }
+
+  .text-content h1 {
+    font-size: 2rem;
+  }
+
+  .text-content p {
+    font-size: 0.9rem;
+  }
+
+  .image-content img {
+    width: 100%;
+  }
+}
 .skills {
   background-color: var(--light-gray);
   position: relative;
@@ -327,24 +382,46 @@ header {
   transition: width 2s ease-in-out;
 }
 
-/* Gallery Section */
+@keyframes skillBarFill {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Gallery Layout (Grid) */
+/* Container for the gallery */
 .gallery-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Center the gallery */
   padding: 20px;
 }
 
+/* Gallery styling */
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid layout */
   gap: 20px;
   padding: 20px;
   width: 100%;
-  max-width: 1200px;
-  justify-items: center;
+  max-width: 1200px; /* Max width to control gallery size */
+  justify-items: center; /* Center the gallery items inside the grid */
 }
 
+/* Gallery item styling */
 .gallery .item {
   display: block;
   border: 2px solid #ddd;
@@ -352,9 +429,9 @@ header {
   overflow: hidden;
   transition: transform 0.3s ease;
   background-color: #fff;
-  width: 100%;
-  max-width: 300px;
-  text-align: center;
+  width: 100%; /* Full width of its grid cell */
+  max-width: 300px; /* Max width of the gallery item */
+  text-align: center; /* Center text within the item */
 }
 
 .gallery .item img {
@@ -382,13 +459,13 @@ header {
   color: #666;
 }
 
+/* Filter buttons */
 .filters {
   display: flex;
   gap: 10px;
   justify-content: center;
   margin-bottom: 20px;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .filters .filter {
@@ -398,8 +475,6 @@ header {
   border-radius: 25px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  min-height: 48px;
-  min-width: 48px;
 }
 
 .filters .filter.active {
@@ -411,7 +486,63 @@ header {
   background-color: #ddd;
 }
 
-/* Education/Experience Section */
+/* Item preview styling */
+.item {
+  width: 180px;
+  height: 180px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.project img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: none;
+  transition: transform 0.3s ease, border 0.3s ease;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+}
+
+.project:hover img {
+  transform: scale(1.1);
+  border-color: #007bff;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5px 10px;
+  text-align: center;
+  font-size: 0.85em;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.project:hover .overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.overlay h3 {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.overlay p {
+  margin: 5px 0 0;
+  font-size: 0.8em;
+}
+
 .education-experience {
   padding: 60px 20px;
   background: #f9f9f9;
@@ -492,10 +623,20 @@ header {
   color: #555;
 }
 
-/* Contact Section */
+/* Responsive */
+@media (max-width: 768px) {
+  .split {
+    flex-direction: column;
+  }
+
+  .split::before {
+    display: none;
+  }
+}
+/* General styles */
 .contact {
   padding: 50px 0;
-  background-color: #f5f5f5;
+  background-color: #f5f5f5; /* light gray */
   color: #333;
   text-align: center;
 }
@@ -512,8 +653,15 @@ header {
   margin-bottom: 40px;
 }
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Single box */
 .contact-box {
-  background-color: #fff;
+  background-color: #fff; /* white background */
   display: flex;
   padding: 30px;
   border-radius: 10px;
@@ -523,6 +671,7 @@ header {
   flex-wrap: wrap;
 }
 
+/* Contact info (left side) */
 .contact-info {
   flex: 1;
   min-width: 280px;
@@ -547,30 +696,85 @@ header {
   font-size: 1.1rem;
 }
 
+/* General styles for the Contact section */
+.contact {
+  padding: 50px 0;
+  background-color: #f5f5f5;  /* Light gray background */
+  color: #333;  /* Dark gray text */
+}
+
+.contact h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #222;  /* Darker gray for headings */
+}
+
+.contact .subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #555;  /* Medium gray for subtitles */
+  margin-bottom: 40px;
+}
+
+/* Container for the contact section */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Contact Info and Form Side-by-Side */
 .contact-wrapper {
-  display: flex;
+  display: flex; /* Enables the side-by-side layout */
   justify-content: space-between;
-  gap: 40px;
-  flex-wrap: wrap;
+  gap: 40px; /* Adds space between the contact info and form */
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
 }
 
 .contact-info-box, form {
   flex: 1;
-  background-color: #fff;
+  background-color: #fff;  /* White background for contact info and form */
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 280px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Light gray shadow */
+  min-width: 280px; /* Minimum width to prevent collapse */
 }
 
+.contact-info-box {
+  margin-right: 20px;
+}
+
+form {
+  margin-left: 20px;
+}
+
+/* Contact Info Styles */
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.info-item i {
+  font-size: 1.4rem;
+  color: #666;  /* Medium gray for icons */
+  margin-right: 10px;
+}
+
+.info-item span {
+  font-size: 1.1rem;
+  color: #444;  /* Darker gray for text */
+}
+
+/* Contact Form Styles */
 form input,
 form textarea {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #ddd;  /* Light gray border */
   border-radius: 5px;
   width: 100%;
-  margin-bottom: 15px;
 }
 
 form textarea {
@@ -580,208 +784,119 @@ form textarea {
 
 form button {
   padding: 15px;
-  background-color: #888;
-  color: #fff;
+  background-color: #888;  /* Medium gray background */
+  color: #fff;  /* White text */
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1rem;
-  width: 100%;
 }
 
 form button:hover {
-  background-color: #777;
+  background-color: #777;  /* Darker gray on hover */
 }
 
-/* Social Links */
-.social-links {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-}
-
-.social-link {
-  color: var(--primary);
-  font-size: 18px;
-  transition: color 0.3s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.social-link:hover {
-  color: #007bff;
-  background-color: rgba(0, 123, 255, 0.1);
-}
-
-/* Footer */
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Loading message */
+#loading-message {
+  font-size: 1.2rem;
   text-align: center;
-  height: 60px;
-  background-color: #f1f1f1;
-  width: 100%;
-  position: relative;
-  margin-top: 40px;
+  color: #333;  /* Dark gray text */
 }
 
-.footer p {
-  margin: 0;
-  color: #333;
-  font-size: 14px;
-}
-
-/* Animations */
-@keyframes skillBarFill {
-  0% { width: 0; }
-  100% { width: 100%; }
-}
-
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Mobile Responsiveness */
+/* Media Queries for Responsive Design */
 @media (max-width: 768px) {
-  header {
-    padding: 15px 20px;
-  }
-  
-  .logo h1 {
-    font-size: 20px;
-  }
-  
-  .menu-toggle {
-    display: block;
-  }
-  
-  .nav-links {
-    position: fixed;
-    top: 70px;
-    left: -100%;
-    width: 100%;
-    background-color: #000;
-    flex-direction: column;
-    align-items: center;
-    transition: left 0.3s ease;
-    padding: 15px 0;
-  }
-  
-  .nav-links.active {
-    left: 0;
-  }
-  
-  .nav-links a {
-    padding: 12px 20px;
-    width: 100%;
-    text-align: center;
-  }
-  
-  section {
-    padding: 60px 0;
-  }
-  
-  h2 {
-    font-size: 1.8rem;
-  }
-  
-  h2::after {
-    width: 60px;
-  }
-  
-  .hero {
-    height: auto;
-    padding: 100px 0 50px;
-  }
-  
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .text-content h1 {
-    font-size: 2.5rem;
-  }
-  
-  .text-content p {
-    font-size: 1rem;
-  }
-  
-  .image-content img {
-    width: 200px;
-    height: 200px;
-    margin-top: 30px;
-  }
-  
-  .split {
-    flex-direction: column;
-  }
-  
-  .split::before {
-    display: none;
-  }
-  
   .contact-wrapper {
-    flex-direction: column;
+    flex-direction: column;  /* Stack content vertically on smaller screens */
+    align-items: center;
   }
-  
-  .contact-info-box, form {
+
+  .contact-info-box,
+  form {
     width: 100%;
-    margin: 0 0 20px 0;
+    margin-bottom: 20px;
+  }
+
+  .contact-info-box {
+    margin-right: 0;
+  }
+
+  form {
+    margin-left: 0;
   }
 }
 
 @media (max-width: 480px) {
-  .text-content h1 {
+  .contact h2 {
     font-size: 2rem;
   }
-  
-  .text-content p {
+
+  .contact .subtitle {
+    font-size: 1rem;
+  }
+
+  .info-item i {
+    font-size: 1.2rem;
+  }
+
+  form input,
+  form textarea {
     font-size: 0.9rem;
   }
-  
-  .gallery {
-    grid-template-columns: 1fr;
-  }
-  
-  .card {
-    padding: 15px;
-  }
-  
-  .card h4 {
+
+  form button {
     font-size: 1.1rem;
   }
-  
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .info-item i {
-    margin-bottom: 5px;
-    margin-right: 0;
-  }
-  
-  .footer {
-    height: auto;
-    padding: 15px 0;
-  }
-  
-  .footer p {
-    padding: 0 15px;
-  }
+}
+
+
+
+.social-links {
+  margin-top: 20px;
+}
+
+.social-link {
+  margin-right: 10px;
+  color: var(--primary);
+  font-size: 18px;
+  transition: color 0.3s;
+}
+
+.social-link:hover {
+  color: #007bff;
+}
+.logo {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 80px; /* Adjust size as needed */
+  height: auto;
+  z-index: 1100; /* Above header */
+}
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+section {
+  padding: 80px 0;
+}  
+.footer {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  text-align: center; 
+  height: 60px; 
+  background-color: #f1f1f1; 
+  width: 100%; 
+  position: relative; /* Changed from absolute */
+  margin-top: 40px;
+}
+
+
+.footer p {
+  margin: 0; 
+  color: #333; 
+  font-size: 14px; 
 }
