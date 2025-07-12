@@ -18,6 +18,11 @@
       <div class="logo">
         <img src="logo.png" alt="Logo">
       </div>
+      <div class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
       <ul class="nav-links">
         <li><a href="#home">Home</a></li>
         <li><a href="#skills">Skills</a></li>
@@ -48,8 +53,6 @@
     </div>
   </section>
   
-  
-
   <!-- Skills Section -->
   <section id="skills" class="skills">
     <div class="container">
@@ -207,7 +210,10 @@
             </div>
           </div>
         </div>
-        
+      </div>
+    </div>
+  </section>
+  
   <!-- Projects Section -->
   <section id="projects" class="projects">
     <div class="container">
@@ -311,8 +317,7 @@
         </div>
       </div>
     </div>
-</section>
-
+  </section>
 
   <!-- Combined Education & Experience Section (Side by Side) -->
   <section id="education-experience" class="education-experience">
@@ -358,7 +363,6 @@
             </div>
           </div>
         </div>
-  
       </div>
     </div>
   </section>
@@ -395,44 +399,94 @@
       </div>
   
       <div id="loading-message" style="display: none;">Sending message...</div>
-  
     </div>
-    <script>
-      const filterButtons = document.querySelectorAll(".filter");
-      const projectItems = document.querySelectorAll(".gallery .item");
-    
-      filterButtons.forEach(button => {
-        button.addEventListener("click", () => {
-          // Remove "active" class from all buttons
-          filterButtons.forEach(btn => btn.classList.remove("active"));
-          // Add "active" to the clicked button
-          button.classList.add("active");
-    
-          const filterValue = button.getAttribute("data-filter");
-    
-          projectItems.forEach(item => {
-            if (filterValue === "all" || item.getAttribute("data-category") === filterValue) {
-              item.style.display = "block";
-            } else {
-              item.style.display = "none";
-            }
-          });
-        });
-      });
-    </script>
-    <script src="combine.js"> </script>
-    <script src="server.js"> </script>
   </section>
+
   <!-- Footer -->
-  <footer>
+  <footer class="footer">
     <div class="container">
       <div class="social-links">
         <a href="https://github.com/XAash1sh0" target="_blank"><i class="fab fa-github"></i></a>
         <a href="https://www.linkedin.com/in/aashish-karki-06456125a/" target="_blank"><i class="fab fa-linkedin"></i></a>
         <a href="mailto:aashishpro18@gmail.com" target="_blank"><i class="fas fa-envelope"></i></a>
       </div>
-      <p>© 2025 Aashish Kumar Karki | All rights reserved </p>
+      <p>© 2025 Aashish Kumar Karki | All rights reserved</p>
     </div>
   </footer>
+
+  <script>
+    // Mobile menu toggle functionality
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      menuToggle.classList.toggle('active');
+    });
+
+    // Close mobile menu when clicking on a link
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        menuToggle.classList.remove('active');
+      });
+    });
+
+    // Project filtering
+    const filterButtons = document.querySelectorAll(".filter");
+    const projectItems = document.querySelectorAll(".gallery .item");
+    
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+    
+        const filterValue = button.getAttribute("data-filter");
+    
+        projectItems.forEach(item => {
+          if (filterValue === "all" || item.getAttribute("data-category") === filterValue) {
+            item.style.display = "block";
+          } else {
+            item.style.display = "none";
+          }
+        });
+      });
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Animate skill bars on scroll
+    const skillBars = document.querySelectorAll('.skill-level');
+    
+    function animateSkillBars() {
+      skillBars.forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+          bar.style.width = width;
+        }, 100);
+      });
+    }
+    
+    // Trigger animation when skills section is in view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateSkillBars();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    
+    observer.observe(document.querySelector('.skills'));
+  </script>
 </body>
 </html>
