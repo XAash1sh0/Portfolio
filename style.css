@@ -889,11 +889,11 @@ section {
   text-align: center; 
   height: 60px; 
   background-color: #f1f1f1; 
-  margin-top: 40px; 
   width: 100%; 
-  position: absolute; 
-  bottom: 0; 
+  position: relative; /* Changed from absolute */
+  margin-top: 40px;
 }
+
 
 .footer p {
   margin: 0; 
