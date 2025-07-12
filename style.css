@@ -137,7 +137,9 @@ header {
 }
 
 .logo {
-  width: 140px;
+  display: flex;
+  align-items: center;
+  width: 140px; /* or your size */
   height: auto;
 }
 
