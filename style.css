@@ -127,14 +127,19 @@ header {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #000000;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 20px;
+  background-color: #000;
   z-index: 1000;
-  transition: var(--transition);
 }
+
+header .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center; /* vertical centering */
+  justify-content: space-between; /* space out logo + nav */
+}
+
 
 .logo {
   display: flex;
