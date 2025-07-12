@@ -352,62 +352,64 @@ header .container {
   transition: width 2s ease-in-out;
 }
 
-.gallery-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px; /* more space */
-  background-color: #ffffff; /* clean background */
-}
-
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 30px; /* a bit more breathing room */
-  width: 100%;
-  max-width: 1200px;
-  justify-items: center;
-}
-
+/* === Enhanced Project Cards for .gallery === */
 .gallery .item {
-  display: block;
-  border: none;
+  position: relative;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #ffffff;
-  width: 100%;
-  max-width: 300px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* soft shadow */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .gallery .item:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(0, 123, 255, 0.2);
 }
 
-.gallery .item img {
-  width: 100%;
+.gallery .project {
+  position: relative;
+}
+
+.gallery .project img {
   height: 200px;
+  width: 100%;
   object-fit: cover;
+  display: block;
   border-bottom: none;
 }
 
-.gallery .item .content {
+/* Add overlay gradient */
+.gallery .overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  color: #fff;
+  transition: background 0.3s ease;
 }
 
-.gallery .item .content h3 {
-  font-size: 1.2rem;
+.gallery .overlay h3 {
+  font-size: 1.1rem;
   margin-bottom: 8px;
-  color: #000;
+  color: #fff;
 }
 
-.gallery .item .content p {
-  font-size: 0.95rem;
-  color: #555;
+.gallery .overlay p {
+  font-size: 0.9rem;
+  color: #ddd;
+  margin-bottom: 0;
 }
+
+/* Optional: Add subtle zoom effect to images */
+.gallery .project img {
+  transition: transform 0.4s ease;
+}
+
+.gallery .item:hover img {
+  transform: scale(1.05);
+}
+
 
 /* Filters */
 .filters {
