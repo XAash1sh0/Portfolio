@@ -351,7 +351,6 @@ header .container {
   width: 0;
   transition: width 2s ease-in-out;
 }
-
 /* === Gallery Grid === */
 .gallery {
   display: grid;
@@ -457,8 +456,6 @@ header .container {
   color: white;
   border-color: #007bff;
 }
-
-
 
 /* Education/Experience Section */
 .education-experience {
