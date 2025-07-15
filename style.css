@@ -360,19 +360,32 @@ header .container {
   padding: 20px;
 }
 
+/* === Gallery Grid === */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  justify-items: center;
+  padding: 20px;
+  padding-inline: 10px;
+}
+
 /* === Circular Project Cards === */
 .gallery .item {
   position: relative;
   width: 220px;
+  max-width: 90vw;
   aspect-ratio: 1;
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid #fff;
-  outline: 3px solid #007bff; /* Blue outline */
+  outline: 3px solid #007bff;
   outline-offset: 4px;
   background-color: #ffffff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
 .gallery .item:hover {
@@ -408,10 +421,15 @@ header .container {
   flex-direction: column;
   justify-content: flex-end;
   padding: 20px;
+  backdrop-filter: blur(4px);
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent 60%);
   text-align: center;
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.gallery .item:hover .overlay {
+  transform: translateY(-8px);
 }
 
 .gallery .overlay h3 {
@@ -420,6 +438,10 @@ header .container {
   margin: 0 0 6px;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .gallery .overlay p {
@@ -427,34 +449,38 @@ header .container {
   margin: 0;
   line-height: 1.3;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.3);
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 /* === Colored Text Per Card Using nth-child === */
-.gallery .item:nth-child(1) .overlay h3 { color: #007bff; }  /* Blue */
+.gallery .item:nth-child(1) .overlay h3 { color: #007bff; }
 .gallery .item:nth-child(1) .overlay p  { color: #66b2ff; }
 
-.gallery .item:nth-child(2) .overlay h3 { color: #28a745; }  /* Green */
+.gallery .item:nth-child(2) .overlay h3 { color: #28a745; }
 .gallery .item:nth-child(2) .overlay p  { color: #6fdc8c; }
 
-.gallery .item:nth-child(3) .overlay h3 { color: #fd7e14; }  /* Orange */
+.gallery .item:nth-child(3) .overlay h3 { color: #fd7e14; }
 .gallery .item:nth-child(3) .overlay p  { color: #ffb97a; }
 
-.gallery .item:nth-child(4) .overlay h3 { color: #6f42c1; }  /* Purple */
+.gallery .item:nth-child(4) .overlay h3 { color: #6f42c1; }
 .gallery .item:nth-child(4) .overlay p  { color: #b388f2; }
 
-.gallery .item:nth-child(5) .overlay h3 { color: #dc3545; }  /* Red */
+.gallery .item:nth-child(5) .overlay h3 { color: #dc3545; }
 .gallery .item:nth-child(5) .overlay p  { color: #ff7a89; }
 
-.gallery .item:nth-child(6) .overlay h3 { color: #17a2b8; }  /* Cyan */
+.gallery .item:nth-child(6) .overlay h3 { color: #17a2b8; }
 .gallery .item:nth-child(6) .overlay p  { color: #6fd0dd; }
 
-.gallery .item:nth-child(7) .overlay h3 { color: #ffc107; }  /* Yellow */
+.gallery .item:nth-child(7) .overlay h3 { color: #ffc107; }
 .gallery .item:nth-child(7) .overlay p  { color: #ffe07a; }
 
-.gallery .item:nth-child(8) .overlay h3 { color: #20c997; }  /* Teal */
+.gallery .item:nth-child(8) .overlay h3 { color: #20c997; }
 .gallery .item:nth-child(8) .overlay p  { color: #7ee2cb; }
 
-.gallery .item:nth-child(9) .overlay h3 { color: #6610f2; }  /* Indigo */
+.gallery .item:nth-child(9) .overlay h3 { color: #6610f2; }
 .gallery .item:nth-child(9) .overlay p  { color: #aa82f7; }
 
 /* === Filters Style === */
@@ -473,7 +499,7 @@ header .container {
   border: 1px solid #ddd;
   border-radius: 25px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease, transform 0.2s ease;
   font-size: 0.95rem;
   color: #333;
 }
@@ -483,6 +509,7 @@ header .container {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
+  transform: scale(1.05);
 }
 
 
