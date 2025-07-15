@@ -455,33 +455,10 @@ header .container {
   border-radius: 4px;
 }
 
-/* === Colored Text Per Card Using nth-child === */
-.gallery .item:nth-child(1) .overlay h3 { color: #007bff; }
-.gallery .item:nth-child(1) .overlay p  { color: #66b2ff; }
-
-.gallery .item:nth-child(2) .overlay h3 { color: #28a745; }
-.gallery .item:nth-child(2) .overlay p  { color: #6fdc8c; }
-
-.gallery .item:nth-child(3) .overlay h3 { color: #fd7e14; }
-.gallery .item:nth-child(3) .overlay p  { color: #ffb97a; }
-
-.gallery .item:nth-child(4) .overlay h3 { color: #6f42c1; }
-.gallery .item:nth-child(4) .overlay p  { color: #b388f2; }
-
-.gallery .item:nth-child(5) .overlay h3 { color: #dc3545; }
-.gallery .item:nth-child(5) .overlay p  { color: #ff7a89; }
-
-.gallery .item:nth-child(6) .overlay h3 { color: #17a2b8; }
-.gallery .item:nth-child(6) .overlay p  { color: #6fd0dd; }
-
-.gallery .item:nth-child(7) .overlay h3 { color: #ffc107; }
-.gallery .item:nth-child(7) .overlay p  { color: #ffe07a; }
-
-.gallery .item:nth-child(8) .overlay h3 { color: #20c997; }
-.gallery .item:nth-child(8) .overlay p  { color: #7ee2cb; }
-
-.gallery .item:nth-child(9) .overlay h3 { color: #6610f2; }
-.gallery .item:nth-child(9) .overlay p  { color: #aa82f7; }
+.gallery .overlay h3,
+.gallery .overlay p {
+  color: #fff;
+}
 
 /* === Filters Style === */
 .filters {
