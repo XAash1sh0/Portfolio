@@ -421,32 +421,56 @@ const loadingMessage = document.getElementById("loading-message");
 if (contactForm) {
   contactForm.addEventListener("submit", async function (e) {
     e.preventDefault();
+
+    // Show loading message
     loadingMessage.style.display = "block";
 
-    // Manually collect values from inputs by id
-    const data = {
-      name: document.getElementById("name").value.trim(),
-      email: document.getElementById("email").value.trim(),
-      message: document.getElementById("message").value.trim(),
-    };
+    // Collect input values
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    // Basic validation
+    if (!name || !email || !message) {
+      alert("Please fill in all fields.");
+      loadingMessage.style.display = "none";
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      alert("Please enter a valid email address.");
+      loadingMessage.style.display = "none";
+      return;
+    }
+
+    const data = { name, email, message };
 
     try {
-      const response = await fetch("http://localhost:3000/send-message", {
+      const response = await fetch("/send-message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+
       const result = await response.json();
-      alert(result.message);
-      contactForm.reset();
+
+      if (response.ok) {
+        alert(result.message || "Message sent successfully!");
+        contactForm.reset();
+      } else {
+        alert(result.message || "Something went wrong. Please try again later.");
+      }
+
     } catch (error) {
-      console.error(error);
+      console.error("Error:", error);
       alert("Failed to send message. Please try again later.");
     } finally {
       loadingMessage.style.display = "none";
     }
   });
 }
+
 
     // Mobile menu toggle functionality
     const menuToggle = document.querySelector('.menu-toggle');
